@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Guess Number Game</title>
+    <style>
+        :root{
+            --bg:#0b0f14;
+            --card:#0f1720;
+            --muted:#9aa6b2;
+            --accent:#6ee7b7;
+            --glass: rgba(255,255,255,0.03);
+            --card-radius:16px;
+        }
+
+        html,body{
+            height:100%;
+            margin:0;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+            background: radial-gradient(1200px 600px at 10% 10%, rgba(30,41,59,0.25), transparent),
+                                    radial-gradient(900px 400px at 90% 90%, rgba(59,130,246,0.06), transparent),
+                                    var(--bg);
+            color:#e6eef6;
+            -webkit-font-smoothing:antialiased;
+            -moz-osx-font-smoothing:grayscale;
+        }
+
+        /* center page */
+        .wrap{
+            min-height:100%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:2rem;
+            box-sizing:border-box;
+        }
+
+        /* card */
+        .card{
+            width:360px;
+            max-width:100%;
+            background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+            border:1px solid rgba(255,255,255,0.04);
+            box-shadow: 0 10px 30px rgba(2,6,23,0.7), inset 0 1px 0 rgba(255,255,255,0.02);
+            border-radius: var(--card-radius);
+            padding:1.75rem;
+            display:flex;
+            flex-direction:column;
+            gap:1rem;
+        }
+
+        .card-header{
+            text-align:center;
+            margin-bottom:0.25rem;
+        }
+
+        .title{
+            font-size:1.25rem;
+            font-weight:600;
+            letter-spacing:0.2px;
+            color: #eaf6f0;
+            margin:0;
+        }
+
+        .subtitle{
+            color:var(--muted);
+            font-size:0.95rem;
+            margin-top:0.35rem;
+        }
+
+        .content{
+            display:flex;
+            flex-direction:column;
+            gap:0.75rem;
+            margin-top:0.5rem;
+            flex:1;
+        }
+
+        label{
+            font-size:0.9rem;
+            color:var(--muted);
+        }
+
+        input[type="number"], input[type="text"]{
+            width:100%;
+            padding:0.8rem 0.9rem;
+            border-radius:10px;
+            border:1px solid rgba(255,255,255,0.03);
+            background: linear-gradient(180deg, rgba(255,255,255,0.01), rgba(0,0,0,0.05));
+            color: #e6eef6;
+            font-size:1rem;
+            outline:none;
+            box-shadow: inset 0 -1px 0 rgba(0,0,0,0.4);
+        }
+
+        input[type="number"]::placeholder, input[type="text"]::placeholder{
+            color: rgba(230,238,246,0.35);
+        }
+
+        .actions{
+            display:flex;
+            justify-content:center;
+            margin-top:0.5rem;
+        }
+        /* Light-themed Guess button (contrasts on dark page) */
+        #guess-button{
+            width:100%;
+            display:inline-flex;
+            align-items:center;
+            justify-content:center;
+            gap:0.6rem;
+            padding:0.9rem 1rem;
+            border-radius:12px;
+            border: 1px solid rgba(6,16,26,0.06);
+            background: linear-gradient(180deg, #ffffff 0%, #f3f6fb 100%);
+            color: #041024;
+            font-weight:700;
+            letter-spacing:0.35px;
+            cursor:pointer;
+            transition: transform .12s cubic-bezier(.2,.9,.3,1), box-shadow .12s ease, background .12s;
+            box-shadow: 0 6px 18px rgba(3,6,12,0.45), inset 0 -8px 18px rgba(5,9,20,0.03);
+        }
+
+        #guess-button:active{ transform: translateY(1px) scale(.997); box-shadow: 0 4px 12px rgba(3,6,12,0.35) inset 0 -3px 8px rgba(255,255,255,0.03); }
+        #guess-button:hover{ transform: translateY(-2px); box-shadow: 0 12px 28px rgba(3,6,12,0.5); }
+
+        /* small icon inside button - use darker stroke for contrast */
+        #guess-button svg{ width:18px; height:18px; display:block; }
+        #guess-button svg path{ stroke: #041024; }
+
+        /* feedback/result area */
+        #result{
+            margin-top:0.35rem;
+            text-align:center;
+            font-weight:600;
+            color:var(--accent);
+            min-height:1.2em;
+        }
+
+        /* small screens */
+        @media (max-width:420px){
+            .card{ padding:1.25rem; width: 92%; }
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <div class="card" role="group" aria-labelledby="game-title">
+            <header class="card-header">
+                <h1 class="title" id="game-title">Guess Number Game</h1>
+                <div class="subtitle">Enter random 0 - 10 number for guess</div>
+            </header>
+
+            <main class="content">
+                <label for="txt-id">Your guess</label>
+                <input id="txt-id" type="number" min="0" max="10" placeholder="Enter a number between 0 and 10" />
+
+                <div class="actions">
+                    <button id="guess-button" type="button" aria-label="Make a guess" onclick="guessAction()">
+                        <!-- simple check icon -->
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M20 6L9 17l-5-5" stroke="#06101a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                        </svg>
+                        Guess
+                    </button>
+                </div>
+                <div id="result" role="status" aria-live="polite"></div>
+            </main>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
